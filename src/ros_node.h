@@ -4,7 +4,7 @@
 #include "driver.h"
 
 #include <ros/ros.h>
-#include <std_srvs/Trigger.h>
+#include <sensor_msgs_ext/SetAxisHome.h>
 
 #include <chrono>
 
@@ -77,7 +77,7 @@ private:
     /// \param response
     /// \return
     ///
-    bool set_home(std_srvs::TriggerRequest &request, std_srvs::TriggerResponse &response);
+    bool set_home(sensor_msgs_ext::SetAxisHomeRequest &request, sensor_msgs_ext::SetAxisHomeResponse &response);
 };
 
 #endif // ROS_NODE_H

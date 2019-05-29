@@ -129,7 +129,7 @@ void ros_node::spin()
     }
 }
 
-bool ros_node::set_home(std_srvs::TriggerRequest &request, std_srvs::TriggerResponse &response)
+bool ros_node::set_home(sensor_msgs_ext::SetAxisHomeRequest &request, sensor_msgs_ext::SetAxisHomeResponse &response)
 {
     ros_node::m_driver->set_home();
     response.success = true;
