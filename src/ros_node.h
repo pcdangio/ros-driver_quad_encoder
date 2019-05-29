@@ -1,7 +1,7 @@
 #ifndef ROS_NODE_H
 #define ROS_NODE_H
 
-#include "interface.h"
+#include "driver.h"
 
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
@@ -14,11 +14,11 @@ public:
     // CONSTRUCTORS
     ///
     /// \brief ros_node Initializes the ROS node.
-    /// \param device_interface A polymorphic pointer to the device's interface.
+    /// \param device_driver A polymorphic pointer to the device's driver.
     /// \param argc Number of main() args.
     /// \param argv The main() args.
     ///
-    ros_node(interface* device_interface, int argc, char **argv);
+    ros_node(driver* device_driver, int argc, char **argv);
     ~ros_node();
 
     // METHODS
@@ -30,9 +30,9 @@ public:
 private:
     // VARIABLES
     ///
-    /// \brief m_interface The polymorphic instance of the device's interface.
+    /// \brief m_driver The polymorphic instance of the device's driver.
     ///
-    interface* m_interface;
+    driver* m_driver;
     ///
     /// \brief m_node The node's handle.
     ///

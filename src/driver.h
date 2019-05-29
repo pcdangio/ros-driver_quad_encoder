@@ -1,28 +1,28 @@
-/// \file interface.h
-/// \brief Defines the interface class.
-#ifndef INTERFACE_H
-#define INTERFACE_H
+/// \file driver.h
+/// \brief Defines the driver class.
+#ifndef DRIVER_H
+#define DRIVER_H
 
 #include <vector>
 #include <stdexcept>
 #include <chrono>
 
 ///
-/// \brief Provides a base interface class for quadrature encoders.
+/// \brief Provides a base driver class for quadrature encoders.
 ///
-class interface
+class driver
 {
 public:
     // CONSTRUCTORS
     ///
-    /// \brief interface Creates a new interface instance.
+    /// \brief driver Creates a new driver instance.
     ///
-    interface();
-    virtual ~interface() = 0;
+    driver();
+    virtual ~driver() = 0;
 
     // METHODS
     ///
-    /// \brief initialize Initializes the interface.
+    /// \brief initialize Initializes the driver.
     /// \param gpio_pin_a The GPIO pin connected to signal A of the encoder.
     /// \param gpio_pin_b The GPIO pin connected to signal B of the encoder.
     /// \param cpr The Counts Per Revolution (CPR) of the encoder.
@@ -99,4 +99,4 @@ private:
     void update_state(unsigned int new_state);
 };
 
-#endif // INTERFACE_H
+#endif // DRIVER_H

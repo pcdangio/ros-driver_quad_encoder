@@ -1,22 +1,22 @@
-/// \file rpi_interface.h
-/// \brief Defines the rpi_interface class.
-#ifndef RPI_INTERFACE_H
-#define RPI_INTERFACE_H
+/// \file rpi_driver.h
+/// \brief Defines the rpi_driver class.
+#ifndef RPI_DRIVER_H
+#define RPI_DRIVER_H
 
-#include "interface.h"
+#include "driver.h"
 
 ///
-/// \brief A Raspberry Pi interface for a generic quadrature encoder.
+/// \brief A Raspberry Pi driver for a generic quadrature encoder.
 ///
-class rpi_interface : public interface
+class rpi_driver : public driver
 {
 public:
     // CONSTRUCTORS
     ///
-    /// \brief rpi_interface Initializes a new RPi interface.
+    /// \brief rpi_driver Initializes a new RPi driver.
     ///
-    rpi_interface();
-    ~rpi_interface() override;
+    rpi_driver();
+    ~rpi_driver() override;
 
     // METHODS
     void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio) override;
@@ -82,8 +82,8 @@ private:
 /// \param gpio_pin The GPIO pin that generated the interrupt.
 /// \param level The new level of the GPIO pin.
 /// \param tick The timestamp of the interrupt.
-/// \param user_data A void pointer to the rpi_interface instance to manage the interrupt.
+/// \param user_data A void pointer to the rpi_driver instance to manage the interrupt.
 ///
 void interrupt_callback(int pigpiod_handle, unsigned int gpio_pin, unsigned int level, uint32_t tick, void* user_data);
 
-#endif // RPI_INTERFACE_H
+#endif // RPI_DRIVER_H

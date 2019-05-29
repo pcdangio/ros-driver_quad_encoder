@@ -3,19 +3,19 @@
 #include <messages_sensor/AxisState.h>
 #include <messages_sensor/AxisDelta.h>
 
-ros_node::ros_node(interface* device_interface, int argc, char **argv)
+ros_node::ros_node(driver* device_driver, int argc, char **argv)
 {
-    // Take ownership of the device interface.
-    ros_node::m_interface = device_interface;
+    // Take ownership of the device driver.
+    ros_node::m_driver = device_driver;
 
     // Initialize variables.
     ros_node::m_prior_timestamp = ros::Time::now();
-    ros_node::m_prior_position = ros_node::m_interface->get_position();
+    ros_node::m_prior_position = ros_node::m_driver->get_position();
     ros_node::m_prior_velocity = 0;
     ros_node::m_prior_acceleration = 0;
 
     // Initialize the node.
-    ros::init(argc, argv, "interface_quad_encoder");
+    ros::init(argc, argv, "driver_quad_encoder");
 
     // Get the node's handle.
     ros_node::m_node = new ros::NodeHandle("quad_encoder");
@@ -43,10 +43,10 @@ ros_node::ros_node(interface* device_interface, int argc, char **argv)
     // Set the publishing rate.
     ros_node::m_rate = new ros::Rate(param_publish_rate);
 
-    // Initialize the interface.
+    // Initialize the driver.
     try
     {
-        ros_node::m_interface->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_cpr), param_spin_ratio);
+        ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_cpr), param_spin_ratio);
         ROS_INFO_STREAM("Encoder initialized successfully on pins " << param_gpio_a << " and " << param_gpio_b << ".");
     }
     catch (std::exception& e)
@@ -66,7 +66,7 @@ void ros_node::spin()
     while(ros::ok())
     {
         // Read the current position.
-        double current_position = ros_node::m_interface->get_position();
+        double current_position = ros_node::m_driver->get_position();
         // Read the current timestamp.
         ros::Time current_timestamp = ros::Time::now();
         // Calculate the duration.
@@ -119,7 +119,7 @@ void ros_node::spin()
 
 bool ros_node::set_home(std_srvs::TriggerRequest &request, std_srvs::TriggerResponse &response)
 {
-    ros_node::m_interface->set_home();
+    ros_node::m_driver->set_home();
     response.success = true;
     return true;
 }

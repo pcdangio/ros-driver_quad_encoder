@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>interface_quad_encoder</name>
+  <name>driver_quad_encoder</name>
   <version>0.1.0</version>
-  <description>An interface for generic quadrature encoders.</description>
+  <description>A ROS driver for generic quadrature encoders.</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
