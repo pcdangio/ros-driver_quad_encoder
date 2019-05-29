@@ -9,7 +9,6 @@ add_compile_options(-std=c++11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED
     roscpp
-    std_srvs
     sensor_msgs_ext
     )
 
