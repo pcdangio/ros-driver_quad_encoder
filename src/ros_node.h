@@ -1,3 +1,5 @@
+/// \file ros_node.h
+/// \brief Defines the ros_node class.
 #ifndef ROS_NODE_H
 #define ROS_NODE_H
 
@@ -8,6 +10,9 @@
 
 #include <chrono>
 
+///
+/// \brief Implements the driver's ROS node functionality.
+///
 class ros_node
 {
 public:
