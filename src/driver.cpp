@@ -73,3 +73,8 @@ void driver::update_state(unsigned int new_state)
     // Update the prior state.
     driver::m_prior_state = new_state;
 }
+
+long long int driver::p_pulses_missed()
+{
+    return driver::m_pulses_missed;
+}

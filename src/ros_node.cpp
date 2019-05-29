@@ -63,6 +63,10 @@ ros_node::~ros_node()
 
 void ros_node::spin()
 {
+    // Monitor changes in missed pulses for logging.
+    long long int n_missed_pulses = 0;
+
+    // Loop.
     while(ros::ok())
     {
         // Read the current position.
@@ -111,6 +115,14 @@ void ros_node::spin()
         ros_node::m_prior_position = current_position;
         ros_node::m_prior_velocity = current_velocity;
         ros_node::m_prior_acceleration = current_acceleration;
+
+        // Log any missed pulses.
+        if(n_missed_pulses != ros_node::m_driver->p_pulses_missed())
+        {
+            ROS_WARN_STREAM("Missed " << ros_node::m_driver->p_pulses_missed() - n_missed_pulses << " pulses.");
+            // Update the last known pulses missed.
+            n_missed_pulses = ros_node::m_driver->p_pulses_missed();
+        }
 
         // Sleep until next time iteration.
         ros_node::m_rate->sleep();

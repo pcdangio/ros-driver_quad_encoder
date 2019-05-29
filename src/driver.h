@@ -50,6 +50,13 @@ public:
     ///
     void tick_b(bool level);
 
+    // PROPERTIES
+    ///
+    /// \brief p_pulses_missed Gets the amount of pulses missed by the encoder.
+    /// \return The number of pulses missed.
+    ///
+    long long int p_pulses_missed();
+
 protected:
     // PARAMETERS
     ///
