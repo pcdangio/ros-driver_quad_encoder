@@ -10,7 +10,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED
     roscpp
     std_srvs
-    messages_sensor
+    sensor_msgs_ext
     )
 
 ## System dependencies are found with CMake's conventions
@@ -157,7 +157,7 @@ if(pigpiod)
     ## Declare a C++ executable
     ## With catkin_make all packages are built within a single CMake context
     ## The recommended prefix ensures that target names across packages don't collide
-    add_executable(${PROJECT_NAME}_rpi_node src/main_rpi.cpp src/ros_node.cpp src/rpi_interface.cpp src/interface.cpp)
+    add_executable(${PROJECT_NAME}_rpi_node src/main_rpi.cpp src/ros_node.cpp src/rpi_driver.cpp src/driver.cpp)
     ## Rename C++ executable without prefix
     ## The above recommended prefix causes long target names, the following renames the
     ## target back to the shorter version for ease of user use
@@ -177,6 +177,9 @@ if(pigpiod)
       LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
       RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
+    ## Add cmake target dependencies of the executable
+    ## same as for the library above
+    add_dependencies(${PROJECT_NAME}_rpi_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 else()
     message(WARNING "PIGPIO not found. Skipping rpi_node.")
 endif()

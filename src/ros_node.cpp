@@ -1,7 +1,7 @@
 #include "ros_node.h"
 
-#include <messages_sensor/AxisState.h>
-#include <messages_sensor/AxisDelta.h>
+#include <sensor_msgs_ext/AxisState.h>
+#include <sensor_msgs_ext/AxisDelta.h>
 
 ros_node::ros_node(driver* device_driver, int argc, char **argv)
 {
@@ -34,8 +34,8 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     private_node.param<double>("publish_rate", param_publish_rate, 30);
 
     // Set up the publishers.
-    ros_node::m_publisher_state = ros_node::m_node->advertise<messages_sensor::AxisState>("state", 10);
-    ros_node::m_publisher_delta = ros_node::m_node->advertise<messages_sensor::AxisDelta>("delta", 10);
+    ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::AxisState>("state", 10);
+    ros_node::m_publisher_delta = ros_node::m_node->advertise<sensor_msgs_ext::AxisDelta>("delta", 10);
 
     // Set up the services.
     ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::set_home, this);
@@ -88,7 +88,7 @@ void ros_node::spin()
         double delta_acceleration = current_acceleration - ros_node::m_prior_acceleration;
 
         // Create AxisState message.
-        messages_sensor::AxisState message_state;
+        sensor_msgs_ext::AxisState message_state;
         message_state.header.stamp = ros::Time::now();
         message_state.header.frame_id = ros::this_node::getName();
         message_state.position = current_position;
@@ -96,7 +96,7 @@ void ros_node::spin()
         message_state.acceleration = current_acceleration;
 
         // Create AxisDelta message.
-        messages_sensor::AxisDelta message_delta;
+        sensor_msgs_ext::AxisDelta message_delta;
         message_delta.header = message_state.header;
         message_delta.delta_position = delta_position;
         message_delta.delta_velocity = delta_velocity;
