@@ -16,9 +16,8 @@ public:
     // CONSTRUCTORS
     ///
     /// \brief interface Creates a new interface instance.
-    /// \param cpr The Counts Per Revolution (CPR) of the encoder.
     ///
-    interface(unsigned int cpr);
+    interface();
     virtual ~interface() = 0;
 
     // METHODS
@@ -26,20 +25,17 @@ public:
     /// \brief initialize Initializes the interface.
     /// \param gpio_pin_a The GPIO pin connected to signal A of the encoder.
     /// \param gpio_pin_b The GPIO pin connected to signal B of the encoder.
+    /// \param cpr The Counts Per Revolution (CPR) of the encoder.
+    /// \param spin_ratio The spin ratio from the axis of interest to the encoder.
     ///
-    virtual void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b) = 0;
+    virtual void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio) = 0;
     ///
-    /// \brief set_home Sets the home position of the axis to a new angle.
-    /// \param position The new home position in radians.
+    /// \brief set_home Sets the home position of the axis to the current position.
     ///
-    void set_home(double position);
+    void set_home();
     ///
-    /// \brief reset_home Resets the home position of the axis to the current position.
-    ///
-    void reset_home();
-    ///
-    /// \brief get_position Gets the current position of the
-    /// \return
+    /// \brief get_position Gets the relative position of the axis to the home position in radians.
+    /// \return The current position in radians.
     ///
     double get_position();
 
@@ -54,29 +50,17 @@ public:
     ///
     void tick_b(bool level);
 
-    // PROPERTIES
-    ///
-    /// \brief p_cpr Gets the Counts Per Revolution (CPR) of the encoder.
-    /// \return The CPR of the encoder.
-    ///
-    unsigned int p_cpr();
-    ///
-    /// \brief p_cpr Sets the Counts Per Revolution (CPR) of the encoder.
-    /// \param cpr The CPR of the encoder.
-    ///
-    void p_cpr(unsigned int cpr);
-    ///
-    /// \brief p_spin_ratio Gets the spin ratio between the axis and the encoder.
-    /// \return The spin ratio between the axis and the encoder.
-    ///
-    double p_spin_ratio();
-    ///
-    /// \brief p_spin_ratio Sets the spin ratio between the axis and the encoder.
-    /// \param spin_ratio The spin ratio between the axis and the encoder.
-    ///
-    void p_spin_ratio(double spin_ratio);
-
 protected:
+    // PARAMETERS
+    ///
+    /// \brief m_cpr Stores the Counts Per Revolution (CPR) of the encoder.
+    ///
+    unsigned int m_cpr;
+    ///
+    /// \brief m_spin_ratio Stores the spin ratio between the axis and the encoder.
+    ///
+    double m_spin_ratio;
+
     // METHODS
     ///
     /// \brief initialize_state Initializes the encoder's state.
@@ -107,14 +91,6 @@ private:
     /// \brief m_pulses_missed A counter for how many times a pulse skip has been detected since the home position was last set.
     ///
     long long int m_pulses_missed;
-    ///
-    /// \brief m_cpr Stores the Counts Per Revolution (CPR) of the encoder.
-    ///
-    unsigned int m_cpr;
-    ///
-    /// \brief m_spin_ratio Stores the spin ratio between the axis and the encoder.
-    ///
-    double m_spin_ratio;
 
     ///
     /// \brief update_state Updates the internal state of the encoder.

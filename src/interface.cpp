@@ -1,7 +1,9 @@
 #include "interface.h"
 
+#include <math.h>
+
 // CONSTRUCTORS
-interface::interface(unsigned int cpr)
+interface::interface()
 {
     // Set default values
     interface::m_home_position = 0;
@@ -10,7 +12,7 @@ interface::interface(unsigned int cpr)
     interface::m_pulses_missed = 0;
 
     // Set the parameters.
-    interface::m_cpr = cpr;
+    interface::m_cpr = 100;
     interface::m_spin_ratio = 1.0;
 
     // Set up the qmatrix, which is to be indexed by (prior_state, current_state)
@@ -22,19 +24,16 @@ interface::~interface()
 }
 
 // METHODS
-void interface::set_home(double position)
-{
-    // Store the new home position while accounting for the spin ratio.
-    interface::m_home_position = static_cast<long long int>(static_cast<double>(position) / interface::m_spin_ratio);
-    // Reset the missed pulses flag.
-    interface::m_pulses_missed = 0;
-}
-void interface::reset_home()
+void interface::set_home()
 {
     // Set the current position as the new home.
     interface::m_home_position = interface::m_current_position;
     // Reset the missed pulses flag.
     interface::m_pulses_missed = 0;
+}
+double interface::get_position()
+{
+    return static_cast<double>(interface::m_current_position) / static_cast<double>(interface::m_cpr) * interface::m_spin_ratio * 2.0 * M_PIf64;
 }
 void interface::initialize_state(bool level_a, bool level_b)
 {
@@ -74,22 +73,3 @@ void interface::update_state(unsigned int new_state)
     // Update the prior state.
     interface::m_prior_state = new_state;
 }
-
-// PROPERTIES
-unsigned int interface::p_cpr()
-{
-    return interface::m_cpr;
-}
-void interface::p_cpr(unsigned int cpr)
-{
-    interface::m_cpr = cpr;
-}
-double interface::p_spin_ratio()
-{
-    return interface::m_spin_ratio;
-}
-void interface::p_spin_ratio(double spin_ratio)
-{
-    interface::m_spin_ratio = spin_ratio;
-}
-

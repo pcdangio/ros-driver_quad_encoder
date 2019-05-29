@@ -23,8 +23,7 @@ void interrupt_callback(int pigpiod_handle, unsigned int gpio_pin, unsigned int 
     }
 }
 
-rpi_interface::rpi_interface(unsigned int cpr)
-    :rpi_interface::interface(cpr)
+rpi_interface::rpi_interface()
 {
     // Connect to the pigpio daemon.
     rpi_interface::m_pigpiod_handle = pigpio_start(nullptr, nullptr);
@@ -43,8 +42,12 @@ rpi_interface::~rpi_interface()
     pigpio_stop(rpi_interface::m_pigpiod_handle);
 }
 
-void rpi_interface::initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b)
+void rpi_interface::initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio)
 {
+    // Store the parameters.
+    rpi_interface::m_cpr = cpr;
+    rpi_interface::m_spin_ratio = spin_ratio;
+
     // Set input pins and store them.
     rpi_interface::initialize_gpio(gpio_pin_a);
     rpi_interface::initialize_gpio(gpio_pin_b);

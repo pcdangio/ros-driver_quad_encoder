@@ -14,13 +14,12 @@ public:
     // CONSTRUCTORS
     ///
     /// \brief rpi_interface Initializes a new RPi interface.
-    /// \param cpr The Counts Per Revolution (CPR) of the encoder.
     ///
-    rpi_interface(unsigned int cpr);
+    rpi_interface();
     ~rpi_interface() override;
 
     // METHODS
-    void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b) override;
+    void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio) override;
 
     // PROPERTIES
     ///
