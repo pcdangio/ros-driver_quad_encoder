@@ -42,29 +42,20 @@ rpi_driver::~rpi_driver()
     pigpio_stop(rpi_driver::m_pigpiod_handle);
 }
 
-void rpi_driver::initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio)
+void rpi_driver::initialize_gpio(unsigned int gpio_pin_a, unsigned int gpio_pin_b)
 {
-    // Store the parameters.
-    rpi_driver::m_cpr = cpr;
-    rpi_driver::m_spin_ratio = spin_ratio;
 
     // Set input pins and store them.
-    rpi_driver::initialize_gpio(gpio_pin_a);
-    rpi_driver::initialize_gpio(gpio_pin_b);
+    rpi_driver::initialize_single_gpio(gpio_pin_a);
+    rpi_driver::initialize_single_gpio(gpio_pin_b);
     rpi_driver::m_gpio_a = gpio_pin_a;
     rpi_driver::m_gpio_b = gpio_pin_b;
-
-    // Read initial state of the encoder.
-    bool level_a = rpi_driver::read_gpio(gpio_pin_a);
-    bool level_b = rpi_driver::read_gpio(gpio_pin_b);
-    // Use initial pin states to determine initial encoder state.
-    rpi_driver::initialize_state(level_a, level_b);
 
     // Attach interrupts.
     rpi_driver::m_callback_a = rpi_driver::attach_callback(gpio_pin_a);
     rpi_driver::m_callback_b = rpi_driver::attach_callback(gpio_pin_b);
 }
-void rpi_driver::initialize_gpio(unsigned int gpio_pin)
+void rpi_driver::initialize_single_gpio(unsigned int gpio_pin)
 {
     int result = set_mode(rpi_driver::m_pigpiod_handle, gpio_pin, PI_INPUT);
     switch(result)

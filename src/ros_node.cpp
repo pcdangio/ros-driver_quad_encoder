@@ -26,8 +26,8 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     private_node.param<int>("gpio_pin_a", param_gpio_a, 0);
     int param_gpio_b;
     private_node.param<int>("gpio_pin_b", param_gpio_b, 0);
-    int param_cpr;
-    private_node.param<int>("cpr", param_cpr, 200);
+    int param_ppr;
+    private_node.param<int>("ppr", param_ppr, 200);
     double param_spin_ratio;
     private_node.param<double>("spin_ratio", param_spin_ratio, 1);
     double param_publish_rate;
@@ -46,7 +46,7 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     // Initialize the driver.
     try
     {
-        ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_cpr), param_spin_ratio);
+        ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_ppr), param_spin_ratio);
         ROS_INFO_STREAM("Encoder initialized successfully on pins " << param_gpio_a << " and " << param_gpio_b << ".");
     }
     catch (std::exception& e)

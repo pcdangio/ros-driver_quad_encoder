@@ -25,10 +25,10 @@ public:
     /// \brief initialize Initializes the driver.
     /// \param gpio_pin_a The GPIO pin connected to signal A of the encoder.
     /// \param gpio_pin_b The GPIO pin connected to signal B of the encoder.
-    /// \param cpr The Counts Per Revolution (CPR) of the encoder.
+    /// \param ppr The Pulses Per Revolution (PPR) of the encoder.
     /// \param spin_ratio The spin ratio from the axis of interest to the encoder.
     ///
-    virtual void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio) = 0;
+    void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int ppr, double spin_ratio);
     ///
     /// \brief set_home Sets the home position of the axis to the current position.
     ///
@@ -70,11 +70,18 @@ protected:
 
     // METHODS
     ///
-    /// \brief initialize_state Initializes the encoder's state.
-    /// \param a The state of signal A.
-    /// \param b The state of signal B.
+    /// \brief initialize_gpio Initializes the GPIO input pins of the driver.
+    /// \param gpio_pin_a The GPIO pin connected to signal A of the encoder.
+    /// \param gpio_pin_b The GPIO pin connected to signal B of the encoder.
     ///
-    void initialize_state(bool level_a, bool level_b);
+    virtual void initialize_gpio(unsigned int gpio_pin_a, unsigned int gpio_pin_b) = 0;
+    ///
+    /// \brief read_gpio Reads the state of a GPIO pin.
+    /// \param gpio_pin The GPIO pin to read the state of.
+    /// \return TRUE if logic level high; FALSE if logic level low.
+    ///
+    virtual bool read_gpio(unsigned int gpio_pin) = 0;
+
 
 private:
     // VARIABLES
@@ -99,6 +106,12 @@ private:
     ///
     long long int m_pulses_missed;
 
+    ///
+    /// \brief initialize_state Initializes the encoder's state.
+    /// \param a The state of signal A.
+    /// \param b The state of signal B.
+    ///
+    void initialize_state(bool level_a, bool level_b);
     ///
     /// \brief update_state Updates the internal state of the encoder.
     /// \param new_state The observed new state of the encoder through signals A and B.

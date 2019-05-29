@@ -18,9 +18,6 @@ public:
     rpi_driver();
     ~rpi_driver() override;
 
-    // METHODS
-    void initialize(unsigned int gpio_pin_a, unsigned int gpio_pin_b, unsigned int cpr, double spin_ratio) override;
-
     // PROPERTIES
     ///
     /// \brief p_gpio_a Gets the GPIO pin connected to signal A of the encoder.
@@ -32,6 +29,11 @@ public:
     /// \return The GPIO pin connected to signal B of the encoder.
     ///
     unsigned int p_gpio_b();
+
+protected:
+    // METHODS
+    void initialize_gpio(unsigned int gpio_pin_a, unsigned int gpio_pin_b) override;
+    bool read_gpio(unsigned int gpio_pin) override;
 
 private:
     // VARIABLES
@@ -56,17 +58,12 @@ private:
     ///
     unsigned int m_callback_b;
 
+    // METHODS
     ///
-    /// \brief initialize_gpio Initializes a GPIO pin as an input.
+    /// \brief initialize_single_gpio Initializes a single GPIO pin as an input.
     /// \param gpio_pin The GPIO pin to initialize.
     ///
-    void initialize_gpio(unsigned int gpio_pin);
-    ///
-    /// \brief read_gpio Reads the current state of a GPIO input pin.
-    /// \param gpio_pin The GPIO pin to read.
-    /// \return TRUE for logic HIGH, otherwise FALSE for logic LOW.
-    ///
-    bool read_gpio(unsigned int gpio_pin);
+    void initialize_single_gpio(unsigned int gpio_pin);
     ///
     /// \brief attach_callback Attaches an interrupt callback to a GPIO pin.
     /// \param gpio_pin The GPIO pin to attach the interrupt to.
