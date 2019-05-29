@@ -8,17 +8,17 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     // Take ownership of the device driver.
     ros_node::m_driver = device_driver;
 
-    // Initialize variables.
-    ros_node::m_prior_timestamp = ros::Time::now();
-    ros_node::m_prior_position = ros_node::m_driver->get_position();
-    ros_node::m_prior_velocity = 0;
-    ros_node::m_prior_acceleration = 0;
-
     // Initialize the node.
     ros::init(argc, argv, "driver_quad_encoder");
 
     // Get the node's handle.
     ros_node::m_node = new ros::NodeHandle("quad_encoder");
+
+    // Initialize variables.
+    ros_node::m_prior_timestamp = ros::Time::now(); // Must be done after ros::init.
+    ros_node::m_prior_position = ros_node::m_driver->get_position();
+    ros_node::m_prior_velocity = 0;
+    ros_node::m_prior_acceleration = 0;
 
     // Read parameters.
     ros::NodeHandle private_node("~");
