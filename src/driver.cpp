@@ -43,14 +43,14 @@ void driver::initialize_state(bool level_a, bool level_b)
 void driver::tick_a(bool level)
 {
     // Calculate the new state.
-    unsigned int new_state = driver::m_prior_state | (static_cast<unsigned int>(level) << 1);
+    unsigned int new_state = (driver::m_prior_state & 1) | (static_cast<unsigned int>(level) << 1);
     // Update the encoder's state with the new state.
     driver::update_state(new_state);
 }
 void driver::tick_b(bool level)
 {
     // Calculate the new state.
-    unsigned int new_state = driver::m_prior_state | static_cast<unsigned int>(level);
+    unsigned int new_state = (driver::m_prior_state & 2) | static_cast<unsigned int>(level);
     // Update the encoder's state with the new state.
     driver::update_state(new_state);
 }
@@ -62,7 +62,7 @@ void driver::update_state(unsigned int new_state)
     // Check if there was a valid transition.
     if(transition == 2)
     {
-        driver::m_pulses_missed = true;
+        driver::m_pulses_missed += 1;
     }
     else
     {
