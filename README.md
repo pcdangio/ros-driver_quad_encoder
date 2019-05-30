@@ -48,14 +48,7 @@ For example, to run the node using a driver for a Raspberry Pi:
 
 ### rpi_node
 
-A Raspberry Pi driver for a quadrature encoder.
-
-
-#### Subscribed Topics
-
-* **`/temperature`** ([sensor_msgs/Temperature])
-
-        The temperature measurements from which the average is computed.
+A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon is running before starting this node.
 
 
 #### Published Topics
@@ -96,7 +89,7 @@ A Raspberry Pi driver for a quadrature encoder.
 
 ## Bugs & Feature Requests
 
-Please report bugs and request features using the [Issue Tracker](https://github.com/pcdangio/ros-sensor_msgs_ext/issues).
+Please report bugs and request features using the [Issue Tracker](https://github.com/pcdangio/ros-driver_quad_encoder/issues).
 
 
 [ROS]: http://www.ros.org
