@@ -47,10 +47,6 @@ private:
     ///
     ros::Publisher m_publisher_state;
     ///
-    /// \brief m_publisher_delta The publisher for AxisDelta messages.
-    ///
-    ros::Publisher m_publisher_delta;
-    ///
     /// \brief m_service_set_home The service for setting the axis's home position.
     ///
     ros::ServiceServer m_service_set_home;
@@ -71,10 +67,6 @@ private:
     /// \brief m_prior_velocity Stores the velocity of the prior state reading.
     ///
     double m_prior_velocity;
-    ///
-    /// \brief m_prior_acceleration Stores the acceleration of the prior state reading.
-    ///
-    double m_prior_acceleration;
 
     ///
     /// \brief set_home A service callback for updating the home position of the axis.

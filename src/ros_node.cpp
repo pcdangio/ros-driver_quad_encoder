@@ -1,7 +1,6 @@
 #include "ros_node.h"
 
 #include <sensor_msgs_ext/AxisState.h>
-#include <sensor_msgs_ext/AxisDelta.h>
 
 ros_node::ros_node(driver* device_driver, int argc, char **argv)
 {
@@ -18,7 +17,6 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     ros_node::m_prior_timestamp = ros::Time::now(); // Must be done after ros::init.
     ros_node::m_prior_position = ros_node::m_driver->get_position();
     ros_node::m_prior_velocity = 0;
-    ros_node::m_prior_acceleration = 0;
 
     // Read parameters.
     ros::NodeHandle private_node("~");
@@ -35,7 +33,6 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
 
     // Set up the publishers.
     ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::AxisState>("state", 10);
-    ros_node::m_publisher_delta = ros_node::m_node->advertise<sensor_msgs_ext::AxisDelta>("delta", 10);
 
     // Set up the services.
     ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::set_home, this);
@@ -88,9 +85,6 @@ void ros_node::spin()
         // Calculate the acceleration.
         double current_acceleration = delta_velocity / delta_time.toSec();
 
-        // Calculate the delta acceleration.
-        double delta_acceleration = current_acceleration - ros_node::m_prior_acceleration;
-
         // Create AxisState message.
         sensor_msgs_ext::AxisState message_state;
         message_state.header.stamp = ros::Time::now();
@@ -99,22 +93,13 @@ void ros_node::spin()
         message_state.velocity = current_velocity;
         message_state.acceleration = current_acceleration;
 
-        // Create AxisDelta message.
-        sensor_msgs_ext::AxisDelta message_delta;
-        message_delta.header = message_state.header;
-        message_delta.delta_position = delta_position;
-        message_delta.delta_velocity = delta_velocity;
-        message_delta.delta_acceleration = delta_acceleration;
-
         // Send the messages.
         ros_node::m_publisher_state.publish(message_state);
-        ros_node::m_publisher_delta.publish(message_delta);
 
         // Update priors.
         ros_node::m_prior_timestamp = current_timestamp;
         ros_node::m_prior_position = current_position;
         ros_node::m_prior_velocity = current_velocity;
-        ros_node::m_prior_acceleration = current_acceleration;
 
         // Log any missed pulses.
         if(n_missed_pulses != ros_node::m_driver->p_pulses_missed())
