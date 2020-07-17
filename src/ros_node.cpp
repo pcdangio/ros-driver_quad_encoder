@@ -1,6 +1,6 @@
 #include "ros_node.h"
 
-#include <sensor_msgs_ext/AxisState.h>
+#include <sensor_msgs_ext/axis_state.h>
 
 ros_node::ros_node(driver* device_driver, int argc, char **argv)
 {
@@ -32,7 +32,7 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     private_node.param<double>("publish_rate", param_publish_rate, 30);
 
     // Set up the publishers.
-    ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::AxisState>("state", 10);
+    ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::axis_state>("state", 10);
 
     // Set up the services.
     ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::set_home, this);
@@ -85,10 +85,9 @@ void ros_node::spin()
         // Calculate the acceleration.
         double current_acceleration = delta_velocity / delta_time.toSec();
 
-        // Create AxisState message.
-        sensor_msgs_ext::AxisState message_state;
-        message_state.header.stamp = ros::Time::now();
-        message_state.header.frame_id = ros::this_node::getName();
+        // Create axis_state message.
+        sensor_msgs_ext::axis_state message_state;
+        message_state.frame_id = ros::this_node::getName();
         message_state.position = current_position;
         message_state.velocity = current_velocity;
         message_state.acceleration = current_acceleration;
@@ -114,7 +113,7 @@ void ros_node::spin()
     }
 }
 
-bool ros_node::set_home(sensor_msgs_ext::SetAxisHomeRequest &request, sensor_msgs_ext::SetAxisHomeResponse &response)
+bool ros_node::set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response)
 {
     ros_node::m_driver->set_home();
     response.success = true;
