@@ -87,7 +87,6 @@ void ros_node::spin()
 
         // Create axis_state message.
         sensor_msgs_ext::axis_state message_state;
-        message_state.frame_id = ros::this_node::getName();
         message_state.position = current_position;
         message_state.velocity = current_velocity;
         message_state.acceleration = current_acceleration;
