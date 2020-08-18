@@ -2,6 +2,7 @@
 
 #include <sensor_msgs_ext/axis_state.h>
 
+// CONSTRUCTORS
 ros_node::ros_node(driver* device_driver, int argc, char **argv)
 {
     // Take ownership of the device driver.
@@ -35,7 +36,7 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::axis_state>("state", 10);
 
     // Set up the services.
-    ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::set_home, this);
+    ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::service_set_home, this);
 
     // Set the publishing rate.
     ros_node::m_rate = new ros::Rate(param_publish_rate);
@@ -44,11 +45,11 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
     try
     {
         ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_ppr), param_spin_ratio);
-        ROS_INFO_STREAM("Encoder initialized successfully on pins " << param_gpio_a << " and " << param_gpio_b << ".");
+        ROS_INFO_STREAM("encoder initialized successfully on pins " << param_gpio_a << " and " << param_gpio_b << ".");
     }
     catch (std::exception& e)
     {
-        ROS_FATAL_STREAM(e.what());
+        ROS_FATAL_STREAM("failed to initialize driver (" << e.what() << ")");
         ros::shutdown();
     }
 }
@@ -58,6 +59,7 @@ ros_node::~ros_node()
     delete ros_node::m_node;
 }
 
+// METHODS
 void ros_node::spin()
 {
     // Monitor changes in missed pulses for logging.
@@ -112,7 +114,7 @@ void ros_node::spin()
     }
 }
 
-bool ros_node::set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response)
+bool ros_node::service_set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response)
 {
     ros_node::m_driver->set_home();
     response.success = true;

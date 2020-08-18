@@ -3,7 +3,8 @@
 #include <pigpiod_if2.h>
 #include <sstream>
 
-void interrupt_callback(int pigpiod_handle, unsigned int gpio_pin, unsigned int level, uint32_t tick, void* user_data)
+// CALLBACKS
+void interrupt_callback(int32_t pigpiod_handle, uint32_t gpio_pin, uint32_t level, uint32_t tick, void* user_data)
 {
     // Convert the user data to the rpi_driver class.
     rpi_driver* driver_ptr = static_cast<rpi_driver*>(user_data);
@@ -23,6 +24,7 @@ void interrupt_callback(int pigpiod_handle, unsigned int gpio_pin, unsigned int 
     }
 }
 
+// CONSTRUCTORS
 rpi_driver::rpi_driver()
 {
     // Connect to the pigpio daemon.
@@ -42,7 +44,8 @@ rpi_driver::~rpi_driver()
     pigpio_stop(rpi_driver::m_pigpiod_handle);
 }
 
-void rpi_driver::initialize_gpio(unsigned int gpio_pin_a, unsigned int gpio_pin_b)
+// METHODS
+void rpi_driver::initialize_gpio(uint32_t gpio_pin_a, uint32_t gpio_pin_b)
 {
 
     // Set input pins and store them.
@@ -55,9 +58,9 @@ void rpi_driver::initialize_gpio(unsigned int gpio_pin_a, unsigned int gpio_pin_
     rpi_driver::m_callback_a = rpi_driver::attach_callback(gpio_pin_a);
     rpi_driver::m_callback_b = rpi_driver::attach_callback(gpio_pin_b);
 }
-void rpi_driver::initialize_single_gpio(unsigned int gpio_pin)
+void rpi_driver::initialize_single_gpio(uint32_t gpio_pin)
 {
-    int result = set_mode(rpi_driver::m_pigpiod_handle, gpio_pin, PI_INPUT);
+    int32_t result = set_mode(rpi_driver::m_pigpiod_handle, gpio_pin, PI_INPUT);
     switch(result)
     {
     case 0:
@@ -91,9 +94,9 @@ void rpi_driver::initialize_single_gpio(unsigned int gpio_pin)
     }
     }
 }
-bool rpi_driver::read_gpio(unsigned int gpio_pin)
+bool rpi_driver::read_gpio(uint32_t gpio_pin)
 {
-    int result = gpio_read(rpi_driver::m_pigpiod_handle, gpio_pin);
+    int32_t result = gpio_read(rpi_driver::m_pigpiod_handle, gpio_pin);
     switch(result)
     {
     case 0:
@@ -116,12 +119,12 @@ bool rpi_driver::read_gpio(unsigned int gpio_pin)
     }
     }
 }
-unsigned int rpi_driver::attach_callback(unsigned int gpio_pin)
+uint32_t rpi_driver::attach_callback(uint32_t gpio_pin)
 {
-    int result = callback_ex(rpi_driver::m_pigpiod_handle, gpio_pin, 2, &interrupt_callback, this);
+    int32_t result = callback_ex(rpi_driver::m_pigpiod_handle, gpio_pin, 2, &interrupt_callback, this);
     if(result >= 0)
     {
-        return static_cast<unsigned int>(result);
+        return static_cast<uint32_t>(result);
     }
     else
     {
@@ -153,11 +156,12 @@ unsigned int rpi_driver::attach_callback(unsigned int gpio_pin)
     }
 }
 
-unsigned int rpi_driver::p_gpio_a()
+// PROPERTIES
+uint32_t rpi_driver::p_gpio_a()
 {
     return rpi_driver::m_gpio_a;
 }
-unsigned int rpi_driver::p_gpio_b()
+uint32_t rpi_driver::p_gpio_b()
 {
     return rpi_driver::m_gpio_b;
 }
