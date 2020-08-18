@@ -38,11 +38,11 @@ To build from source, clone the latest version from this repository into your ca
 
 Run any of the driver nodes with (where xxx is the driver type):
 
-        rosrun driver_quad_encoder xxx_node
+        rosrun driver_quad_encoder driver_quad_encoder_xxx
 
 For example, to run the node using a driver for a Raspberry Pi:
 
-        rosrun driver_quad_encoder rpi_node
+        rosrun driver_quad_encoder driver_quad_encoder_rpi
 
 ## Nodes
 
@@ -82,7 +82,7 @@ A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon i
 
         The ratio of axis rotations to encoder rotations, calculated as AxisRotations/EncoderRotations and can be negative.
 
-* **`publish_rate`** (double, default: 30)
+* **`~/publish_rate`** (double, default: 30)
 
         The rate (in Hz) to publish state and delta messages.
 
