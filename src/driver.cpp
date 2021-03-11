@@ -13,7 +13,6 @@ driver::driver()
 
     // Set the parameters.
     driver::m_cpr = 400;
-    driver::m_spin_ratio = 1.0;
 
     // Set up the qmatrix, which is to be indexed by (prior_state, current_state)
     driver::m_transition_matrix = {{0, 1, -1, 2}, {1, 0, 2, -1}, {-1, 2, 0, 1}, {2, 1, -1, 0}};
@@ -24,11 +23,10 @@ driver::~driver()
 }
 
 // METHODS
-void driver::initialize(uint32_t gpio_pin_a, uint32_t gpio_pin_b, uint32_t ppr, double spin_ratio)
+void driver::initialize(uint32_t gpio_pin_a, uint32_t gpio_pin_b, uint32_t ppr)
 {
     // Store the cpr and spin_ratios.
     driver::m_cpr = ppr * 2UL;  // Two counts for each pulse (rising/falling edge).
-    driver::m_spin_ratio = spin_ratio;
 
     // Call the extended class's initialize_gpio method.
     initialize_gpio(gpio_pin_a, gpio_pin_b);
@@ -47,7 +45,7 @@ void driver::set_home()
 }
 double driver::get_position()
 {
-    return static_cast<double>(driver::m_current_position) / static_cast<double>(driver::m_cpr) * driver::m_spin_ratio * 2.0 * M_PIf64;
+    return static_cast<double>(driver::m_current_position) / static_cast<double>(driver::m_cpr) * 2.0 * M_PIf64;
 }
 
 void driver::tick_a(bool level)
@@ -89,7 +87,8 @@ void driver::update_state(uint32_t new_state)
     driver::m_prior_state = new_state;
 }
 
-uint64_t driver::p_pulses_missed()
+// PROPERTIES
+uint64_t driver::pulses_missed()
 {
     return driver::m_pulses_missed;
 }

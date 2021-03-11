@@ -21,8 +21,7 @@ public:
     /// \param gpio_pin_a The GPIO pin connected to signal A of the encoder.
     /// \param gpio_pin_b The GPIO pin connected to signal B of the encoder.
     /// \param ppr The Pulses Per Revolution (PPR) of the encoder.
-    /// \param spin_ratio The spin ratio from the axis of interest to the encoder.
-    void initialize(uint32_t gpio_pin_a, uint32_t gpio_pin_b, uint32_t ppr, double spin_ratio);
+    void initialize(uint32_t gpio_pin_a, uint32_t gpio_pin_b, uint32_t ppr);
     /// \brief Sets the home position of the axis to the current position.
     void set_home();
     /// \brief Gets the relative position of the axis to the home position in radians.
@@ -39,14 +38,12 @@ public:
     // PROPERTIES
     /// \brief Gets the amount of pulses missed by the encoder.
     /// \return The number of pulses missed.
-    uint64_t p_pulses_missed();
+    uint64_t pulses_missed();
 
 protected:
     // PARAMETERS
     /// \brief Stores the Counts Per Revolution (CPR) of the encoder.
     uint32_t m_cpr;
-    /// \brief Stores the spin ratio between the axis and the encoder.
-    double m_spin_ratio;
 
     // METHODS
     /// \brief Initializes the GPIO input pins of the driver.
@@ -57,7 +54,6 @@ protected:
     /// \param gpio_pin The GPIO pin to read the state of.
     /// \return TRUE if logic level high; FALSE if logic level low.
     virtual bool read_gpio(uint32_t gpio_pin) = 0;
-
 
 private:
     // VARIABLES
@@ -82,4 +78,4 @@ private:
     void update_state(uint32_t new_state);
 };
 
-#endif // DRIVER_H
+#endif
