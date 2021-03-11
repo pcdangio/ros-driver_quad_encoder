@@ -22,27 +22,33 @@ The driver_quad_encoder package has been tested under [ROS] Melodic and Ubuntu 1
 #### Dependencies
 
 - [Robot Operating System (ROS)](http://wiki.ros.org) (middleware for robotics)
-- [sensor_msgs_ext](https://github.com/pcdangio/ros-sensor_msgs_ext) (extension of sensor_msgs for encoders)
+- [sensor_msgs_ext](https://github.com/pcdangio/ros-sensor_msgs_ext) (extension of sensor_msgs)
 - [pigpio](http://abyz.me.uk/rpi/pigpio/) (Raspberry PI I/O)
 
 #### Building
 
 To build from source, clone the latest version from this repository into your catkin workspace and compile the package using
 
-        cd catkin_workspace/src
-        git clone https://github.com/pcdangio/ros-driver_quad_encoder.git driver_quad_encoder
-        cd ../
-        catkin_make
+```bash
+cd catkin_workspace/src
+git clone https://github.com/pcdangio/ros-driver_quad_encoder.git driver_quad_encoder
+cd ../
+catkin_make
+```
 
 ## Usage
 
 Run any of the driver nodes with (where xxx is the driver type):
 
-        rosrun driver_quad_encoder driver_quad_encoder_xxx
+```bash
+rosrun driver_quad_encoder driver_quad_encoder_xxx
+```
 
 For example, to run the node using a driver for a Raspberry Pi:
 
-        rosrun driver_quad_encoder driver_quad_encoder_rpi
+```bash
+rosrun driver_quad_encoder driver_quad_encoder_rpi
+```
 
 ## Nodes
 
@@ -52,14 +58,13 @@ A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon i
 
 
 #### Published Topics
-* **`quad_encoder/state`** ([sensor_msgs_ext/AxisState](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/AxisState.msg))
-        The current state of the axis monitored by the encoder.
-* **`quad_encoder/delta`** ([sensor_msgs_ext/AxisDelta](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/msg/AxisDelta.msg))
-        The change in axis state since the last published state.
+* **`quad_encoder/angle`** ([geometry_msgs_ext](https://github.com/pcdangio/ros-geometry_msgs_ext/blob/master/msg/angle.msg))
+
+        The current angle of the axis monitored by the encoder.
 
 #### Services
 
-* **`set_home`** ([sensor_msgs_ext/SetAxisHome](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/srv/SetAxisHome.msg))
+* **`set_home`** ([sensor_msgs_ext/set_axis_home](https://github.com/pcdangio/ros-sensor_msgs_ext/blob/master/srv/set_axis_home.srv))
 
         Sets the home position of the axis to the current position.
 
@@ -77,10 +82,6 @@ A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon i
 * **`~/ppr`** (int, default: 200)
 
         The pulses per revolution (PPR) of the encoder.
-
-* **`~/spin_ratio`** (double, default: 1.0)
-
-        The ratio of axis rotations to encoder rotations, calculated as AxisRotations/EncoderRotations and can be negative.
 
 * **`~/publish_rate`** (double, default: 30)
 

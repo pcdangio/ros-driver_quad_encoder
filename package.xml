@@ -2,7 +2,7 @@
 <package format="2">
 
   <name>driver_quad_encoder</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>A ROS driver for generic quadrature encoders.</description>
   <license>MIT</license>
 
