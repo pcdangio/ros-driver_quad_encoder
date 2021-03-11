@@ -4,6 +4,7 @@
 #define DRIVER_H
 
 #include <vector>
+#include <mutex>
 #include <stdexcept>
 #include <chrono>
 
@@ -25,8 +26,9 @@ public:
     /// \brief Sets the home position of the axis to the current position.
     void set_home();
     /// \brief Gets the relative position of the axis to the home position in radians.
+    /// \param reset Resets the position to zero after reading it. DEFAULT = FALSE
     /// \return The current position in radians.
-    double get_position();
+    double get_position(bool reset = false);
 
     /// \brief Increments the encoder's state with an A signal pulse.
     /// \param level The new logic level of the A signal.
@@ -57,10 +59,10 @@ protected:
 
 private:
     // VARIABLES
+    /// \brief Provides thread protection for the driver.
+    std::mutex m_mutex;
     /// \brief A matrix mapping encoder state transitions to position changes.
     std::vector<std::vector<int>> m_transition_matrix;
-    /// \brief The current home position in pulse counts.
-    int64_t m_home_position;
     /// \brief The current encoder position in pulse counts.
     int64_t m_current_position;
     /// \brief The prior state of the encoder.

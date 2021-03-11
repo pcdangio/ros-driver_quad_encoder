@@ -6,7 +6,6 @@
 driver::driver()
 {
     // Set default values
-    driver::m_home_position = 0;
     driver::m_current_position = 0;
     driver::m_prior_state = 0;
     driver::m_pulses_missed = 0;
@@ -34,33 +33,52 @@ void driver::initialize(uint32_t gpio_pin_a, uint32_t gpio_pin_b, uint32_t ppr)
     // Initialize the state using the extended class's read methods.
     bool level_a = read_gpio(gpio_pin_a);
     bool level_b = read_gpio(gpio_pin_b);
+    driver::m_mutex.lock();
     driver::initialize_state(level_a, level_b);
+    driver::m_mutex.unlock();
 }
 void driver::set_home()
 {
-    // Set the current position as the new home.
-    driver::m_home_position = driver::m_current_position;
+    driver::m_mutex.lock();
+    // Set current position to zero.
+    driver::m_current_position = 0;
     // Reset the missed pulses flag.
     driver::m_pulses_missed = 0;
+    driver::m_mutex.unlock();
 }
-double driver::get_position()
+double driver::get_position(bool reset)
 {
-    return static_cast<double>(driver::m_current_position) / static_cast<double>(driver::m_cpr) * 2.0 * M_PIf64;
+    // Get current position in CPR.
+    driver::m_mutex.lock();
+    double position = static_cast<double>(driver::m_current_position);
+    if(reset)
+    {
+        driver::m_current_position = 0;
+        driver::m_pulses_missed = 0;
+    }
+    driver::m_mutex.unlock();
+
+    // Return position in radians.
+    return position / static_cast<double>(driver::m_cpr) * 2.0 * M_PIf64;
 }
 
 void driver::tick_a(bool level)
 {
+    driver::m_mutex.lock();
     // Calculate the new state.
     uint32_t new_state = (driver::m_prior_state & 1) | (static_cast<uint32_t>(level) << 1);
     // Update the encoder's state with the new state.
     driver::update_state(new_state);
+    driver::m_mutex.unlock();
 }
 void driver::tick_b(bool level)
 {
+    driver::m_mutex.lock();
     // Calculate the new state.
     uint32_t new_state = (driver::m_prior_state & 2) | static_cast<uint32_t>(level);
     // Update the encoder's state with the new state.
     driver::update_state(new_state);
+    driver::m_mutex.unlock();
 }
 void driver::initialize_state(bool level_a, bool level_b)
 {
