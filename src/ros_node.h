@@ -8,7 +8,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs_ext/set_axis_home.h>
 
-#include <chrono>
+#include <memory>
 
 /// \brief Implements the driver's ROS node functionality.
 class ros_node
@@ -17,10 +17,7 @@ public:
     // CONSTRUCTORS
     /// \brief Initializes the ROS node.
     /// \param device_driver A polymorphic pointer to the device's driver.
-    /// \param argc Number of main() args.
-    /// \param argv The main() args.
-    ros_node(driver* device_driver, int argc, char **argv);
-    ~ros_node();
+    ros_node(const std::shared_ptr<driver>& device_driver);
 
     // METHODS
     /// \brief spin Runs the node.
@@ -29,21 +26,15 @@ public:
 private:
     // DRIVER
     /// \brief The polymorphic instance of the device's driver.
-    driver* m_driver;
+    std::shared_ptr<driver> m_driver;
+
+    // PARAMETERS
+    /// \brief The publishing rate in Hz.
+    double p_publish_rate;
 
     // ROS
     /// \brief The node's handle.
-    ros::NodeHandle* m_node;
-    /// \brief The node's spin rate.
-    ros::Rate* m_rate;
-
-    // VARIABLES
-    /// \brief Stores the timestamp of the prior state reading.
-    ros::Time m_prior_timestamp;
-    /// \brief Stores the position of the prior state reading.
-    double m_prior_position;
-    /// \brief Stores the velocity of the prior state reading.
-    double m_prior_velocity;
+    ros::NodeHandle m_node;
 
     // PUBLISHERS
     /// \brief The publisher for AxisState messages.
@@ -54,9 +45,9 @@ private:
     ros::ServiceServer m_service_set_home;
     /// \brief A service callback for updating the home position of the axis.
     /// \param request The service's request
-    /// \param response
-    /// \return
+    /// \param response The service's response
+    /// \returns TRUE if the service succeeds, otherwise FALSE.
     bool service_set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response);
 };
 
-#endif // ROS_NODE_H
+#endif

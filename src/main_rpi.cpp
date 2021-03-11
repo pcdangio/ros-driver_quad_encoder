@@ -3,11 +3,14 @@
 
 int main(int argc, char **argv)
 {
+    // Initialize the node.
+    ros::init(argc, argv, "driver_quad_encoder");
+
     // Create the driver.
-    rpi_driver* driver = new rpi_driver();
+    std::shared_ptr<rpi_driver> driver = std::make_shared<rpi_driver>();
 
     // Create the node.
-    ros_node node(driver, argc, argv);
+    ros_node node(driver);
 
     // Run the node.
     node.spin();

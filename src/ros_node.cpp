@@ -1,50 +1,30 @@
 #include "ros_node.h"
 
-#include <sensor_msgs_ext/axis_state.h>
+#include <geometry_msgs_ext/angle.h>
 
 // CONSTRUCTORS
-ros_node::ros_node(driver* device_driver, int argc, char **argv)
+ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
 {
     // Take ownership of the device driver.
     ros_node::m_driver = device_driver;
 
-    // Initialize the node.
-    ros::init(argc, argv, "driver_quad_encoder");
-
-    // Get the node's handle.
-    ros_node::m_node = new ros::NodeHandle("quad_encoder");
-
-    // Initialize variables.
-    ros_node::m_prior_timestamp = ros::Time::now(); // Must be done after ros::init.
-    ros_node::m_prior_position = ros_node::m_driver->get_position();
-    ros_node::m_prior_velocity = 0;
-
     // Read parameters.
     ros::NodeHandle private_node("~");
-    int param_gpio_a;
-    private_node.param<int>("gpio_pin_a", param_gpio_a, 0);
-    int param_gpio_b;
-    private_node.param<int>("gpio_pin_b", param_gpio_b, 0);
-    int param_ppr;
-    private_node.param<int>("ppr", param_ppr, 200);
-    double param_spin_ratio;
-    private_node.param<double>("spin_ratio", param_spin_ratio, 1);
-    double param_publish_rate;
-    private_node.param<double>("publish_rate", param_publish_rate, 30);
+    int param_gpio_a = private_node.param<int>("gpio_pin_a", 0);
+    int param_gpio_b = private_node.param<int>("gpio_pin_b", 0);
+    int param_ppr = private_node.param<int>("ppr", 200);
+    ros_node::p_publish_rate = private_node.param<double>("publish_rate", 30);
 
     // Set up the publishers.
-    ros_node::m_publisher_state = ros_node::m_node->advertise<sensor_msgs_ext::axis_state>("state", 10);
+    ros_node::m_publisher_state = ros_node::m_node.advertise<geometry_msgs_ext::angle>("angle", 1);
 
     // Set up the services.
-    ros_node::m_service_set_home = ros_node::m_node->advertiseService("set_home", &ros_node::service_set_home, this);
-
-    // Set the publishing rate.
-    ros_node::m_rate = new ros::Rate(param_publish_rate);
+    ros_node::m_service_set_home = ros_node::m_node.advertiseService("set_home", &ros_node::service_set_home, this);
 
     // Initialize the driver.
     try
     {
-        ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_ppr), param_spin_ratio);
+        ros_node::m_driver->initialize(static_cast<unsigned int>(param_gpio_a), static_cast<unsigned int>(param_gpio_b), static_cast<unsigned int>(param_ppr));
         ROS_INFO_STREAM("encoder initialized successfully on pins " << param_gpio_a << " and " << param_gpio_b << ".");
     }
     catch (std::exception& e)
@@ -53,70 +33,41 @@ ros_node::ros_node(driver* device_driver, int argc, char **argv)
         ros::shutdown();
     }
 }
-ros_node::~ros_node()
-{
-    delete ros_node::m_rate;
-    delete ros_node::m_node;
-}
 
 // METHODS
 void ros_node::spin()
 {
+    // Set up loop rate.
+    ros::Rate loop_rate(ros_node::p_publish_rate);
+
     // Monitor changes in missed pulses for logging.
-    long long int n_missed_pulses = 0;
+    uint64_t n_missed_pulses = 0;
 
     // Loop.
     while(ros::ok())
     {
-        // Read the current position.
-        double current_position = ros_node::m_driver->get_position();
-        // Read the current timestamp.
-        ros::Time current_timestamp = ros::Time::now();
-        // Calculate the duration.
-        ros::Duration delta_time = current_timestamp - ros_node::m_prior_timestamp;
+        // Create angle message from current position.
+        geometry_msgs_ext::angle message;
+        message.angle = ros_node::m_driver->get_position();
 
-        // Calculate the delta position.
-        double delta_position = current_position - ros_node::m_prior_position;
-
-        // Calculate the current velocity.
-        double current_velocity = delta_position / delta_time.toSec();
-
-        // Calculate the delta velocity.
-        double delta_velocity = current_velocity - ros_node::m_prior_velocity;
-
-        // Calculate the acceleration.
-        double current_acceleration = delta_velocity / delta_time.toSec();
-
-        // Create axis_state message.
-        sensor_msgs_ext::axis_state message_state;
-        message_state.position = current_position;
-        message_state.velocity = current_velocity;
-        message_state.acceleration = current_acceleration;
-
-        // Send the messages.
-        ros_node::m_publisher_state.publish(message_state);
-
-        // Update priors.
-        ros_node::m_prior_timestamp = current_timestamp;
-        ros_node::m_prior_position = current_position;
-        ros_node::m_prior_velocity = current_velocity;
+        // Publish the message.
+        ros_node::m_publisher_state.publish(message);
 
         // Log any missed pulses.
-        if(n_missed_pulses != ros_node::m_driver->p_pulses_missed())
+        if(n_missed_pulses != ros_node::m_driver->pulses_missed())
         {
-            ROS_WARN_STREAM("Missed " << ros_node::m_driver->p_pulses_missed() - n_missed_pulses << " pulses.");
+            ROS_WARN_STREAM("missed " << ros_node::m_driver->pulses_missed() - n_missed_pulses << " pulses");
             // Update the last known pulses missed.
-            n_missed_pulses = ros_node::m_driver->p_pulses_missed();
+            n_missed_pulses = ros_node::m_driver->pulses_missed();
         }
 
         // Sleep until next time iteration.
-        ros_node::m_rate->sleep();
+        loop_rate.sleep();
     }
 }
 
 bool ros_node::service_set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response)
 {
     ros_node::m_driver->set_home();
-    response.success = true;
     return true;
 }
