@@ -31,14 +31,16 @@ private:
     // PARAMETERS
     /// \brief The publishing rate in Hz.
     double p_publish_rate;
+    /// \brief Indicates if the node should publish angle deltas instead of total angle.
+    bool p_delta_mode;
 
     // ROS
     /// \brief The node's handle.
     ros::NodeHandle m_node;
 
     // PUBLISHERS
-    /// \brief The publisher for AxisState messages.
-    ros::Publisher m_publisher_state;
+    /// \brief The publisher for encoder position.
+    ros::Publisher m_publisher_position;
 
     // SUBSCRIBERS
     /// \brief The service for setting the axis's home position.

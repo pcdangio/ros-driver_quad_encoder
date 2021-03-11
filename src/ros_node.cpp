@@ -5,7 +5,7 @@
 // CONSTRUCTORS
 ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
 {
-    // Take ownership of the device driver.
+    // Store the device driver.
     ros_node::m_driver = device_driver;
 
     // Read parameters.
@@ -14,9 +14,10 @@ ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
     int param_gpio_b = private_node.param<int>("gpio_pin_b", 0);
     int param_ppr = private_node.param<int>("ppr", 200);
     ros_node::p_publish_rate = private_node.param<double>("publish_rate", 30);
+    ros_node::p_delta_mode = private_node.param<bool>("delta_mode", false);
 
     // Set up the publishers.
-    ros_node::m_publisher_state = ros_node::m_node.advertise<geometry_msgs_ext::angle>("angle", 1);
+    ros_node::m_publisher_position = ros_node::m_node.advertise<geometry_msgs_ext::angle>("position", 1);
 
     // Set up the services.
     ros_node::m_service_set_home = ros_node::m_node.advertiseService("set_home", &ros_node::service_set_home, this);
@@ -46,12 +47,12 @@ void ros_node::spin()
     // Loop.
     while(ros::ok())
     {
-        // Create angle message from current position.
+        // Create angle message from current position (and reset it if in delta mode)
         geometry_msgs_ext::angle message;
-        message.angle = ros_node::m_driver->get_position();
+        message.angle = ros_node::m_driver->get_position(ros_node::p_delta_mode);
 
         // Publish the message.
-        ros_node::m_publisher_state.publish(message);
+        ros_node::m_publisher_position.publish(message);
 
         // Log any missed pulses.
         if(n_missed_pulses != ros_node::m_driver->pulses_missed())
