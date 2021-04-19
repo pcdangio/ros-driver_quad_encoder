@@ -23,6 +23,7 @@ The driver_quad_encoder package has been tested under [ROS] Melodic and Ubuntu 1
 
 - [Robot Operating System (ROS)](http://wiki.ros.org) (middleware for robotics)
 - [sensor_msgs_ext](https://github.com/pcdangio/ros-sensor_msgs_ext) (extension of sensor_msgs)
+- [geometry_msgs_ext](https://github.com/pcdangio/ros-geometry_msgs_ext) (extension of geometry_msgs)
 - [pigpio](http://abyz.me.uk/rpi/pigpio/) (Raspberry PI I/O)
 
 #### Building
