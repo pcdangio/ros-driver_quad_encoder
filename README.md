@@ -59,7 +59,7 @@ A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon i
 
 
 #### Published Topics
-* **`quad_encoder/angle`** ([geometry_msgs_ext](https://github.com/pcdangio/ros-geometry_msgs_ext/blob/master/msg/angle.msg))
+* **`position`** ([geometry_msgs_ext](https://github.com/pcdangio/ros-geometry_msgs_ext/blob/master/msg/angle.msg))
 
         The current angle of the axis monitored by the encoder.
 
@@ -87,6 +87,10 @@ A Raspberry Pi driver for a quadrature encoder.  Ensure that the pigpio daemon i
 * **`~/publish_rate`** (double, default: 30)
 
         The rate (in Hz) to publish state and delta messages.
+
+* **`~/delta_mode`** (boolean, default: FALSE)
+
+        If set to TRUE, the angle published on the `position` topic will contain the delta (change) position since the last published angle.
 
 
 ## Bugs & Feature Requests
