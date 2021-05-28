@@ -20,7 +20,7 @@ ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
     ros_node::m_publisher_position = ros_node::m_node.advertise<geometry_msgs_ext::angle>("position", 1);
 
     // Set up the services.
-    ros_node::m_service_set_home = ros_node::m_node.advertiseService("set_home", &ros_node::service_set_home, this);
+    ros_node::m_service_set_home = private_node.advertiseService("set_home", &ros_node::service_set_home, this);
 
     // Initialize the driver.
     try
