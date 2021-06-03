@@ -4,8 +4,7 @@ project(driver_quad_encoder)
 # Find catkin and package dependencies.
 find_package(catkin REQUIRED
   roscpp
-  sensor_msgs_ext
-  geometry_msgs_ext)
+  sensor_msgs_ext)
 
 # Find system dependencies.
 find_library(pigpiod pigpiod_if2)

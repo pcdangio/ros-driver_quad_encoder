@@ -1,6 +1,6 @@
 #include "ros_node.h"
 
-#include <geometry_msgs_ext/angle.h>
+#include <sensor_msgs_ext/axis_state.h>
 
 // CONSTRUCTORS
 ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
@@ -14,10 +14,9 @@ ros_node::ros_node(const std::shared_ptr<driver>& device_driver)
     int param_gpio_b = private_node.param<int>("gpio_pin_b", 0);
     int param_ppr = private_node.param<int>("ppr", 200);
     ros_node::p_publish_rate = private_node.param<double>("publish_rate", 30);
-    ros_node::p_delta_mode = private_node.param<bool>("delta_mode", false);
 
     // Set up the publishers.
-    ros_node::m_publisher_position = ros_node::m_node.advertise<geometry_msgs_ext::angle>("position", 1);
+    ros_node::m_publisher_position = ros_node::m_node.advertise<sensor_msgs_ext::axis_state>("axis_state", 1);
 
     // Set up the services.
     ros_node::m_service_set_home = private_node.advertiseService("set_home", &ros_node::service_set_home, this);
@@ -41,15 +40,35 @@ void ros_node::spin()
     // Set up loop rate.
     ros::Rate loop_rate(ros_node::p_publish_rate);
 
+    // Set up tracking for velocity/accleration calculations.
+    ros_node::m_prior_time = ros::Time::now();
+    ros_node::m_prior_position = 0;
+    ros_node::m_prior_velocity = 0;
+
     // Monitor changes in missed pulses for logging.
     uint64_t n_missed_pulses = 0;
 
     // Loop.
     while(ros::ok())
     {
-        // Create angle message from current position (and reset it if in delta mode)
-        geometry_msgs_ext::angle message;
-        message.angle = ros_node::m_driver->get_position(ros_node::p_delta_mode);
+        // Create output axis state message.
+        sensor_msgs_ext::axis_state message;
+        
+        // Calculate delta time since last measurement.
+        ros::Time current_time = ros::Time::now();
+        double_t dt = (current_time - ros_node::m_prior_time).toSec();
+
+        // Get the position measurement from the driver.
+        message.position = ros_node::m_driver->get_position();
+
+        // Calculate velocity and acceleration.
+        message.velocity = (message.position - ros_node::m_prior_position) / dt;
+        message.acceleration = (message.velocity - ros_node::m_prior_velocity) / dt;
+
+        // Update priors.
+        ros_node::m_prior_time = current_time;
+        ros_node::m_prior_position = message.position;
+        ros_node::m_prior_velocity = message.velocity;
 
         // Publish the message.
         ros_node::m_publisher_position.publish(message);
@@ -69,6 +88,11 @@ void ros_node::spin()
 
 bool ros_node::service_set_home(sensor_msgs_ext::set_axis_homeRequest &request, sensor_msgs_ext::set_axis_homeResponse &response)
 {
+    // Set the driver's home position.
     ros_node::m_driver->set_home();
+
+    // Reset the prior position to zero to avoid velocity jump.
+    ros_node::m_prior_position = 0;
+
     return true;
 }

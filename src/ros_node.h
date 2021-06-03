@@ -30,9 +30,15 @@ private:
 
     // PARAMETERS
     /// \brief The publishing rate in Hz.
-    double p_publish_rate;
-    /// \brief Indicates if the node should publish angle deltas instead of total angle.
-    bool p_delta_mode;
+    double_t p_publish_rate;
+
+    // VARIABLES
+    /// \brief The timestamp of the last position measurement.
+    ros::Time m_prior_time;
+    /// \brief The last position measured.
+    double_t m_prior_position;
+    /// \brief The last velocity measured.
+    double_t m_prior_velocity;
 
     // ROS
     /// \brief The node's handle.
